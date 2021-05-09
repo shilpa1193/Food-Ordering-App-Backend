@@ -1,5 +1,8 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -7,24 +10,34 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.List;
+
+/**
+ * The RestaurantEntity class is mapped to table 'restaurant' in database
+ * All the columns are mapped to its respective attributes of the class
+ */
 
 @Entity
 @Table(name = "restaurant")
 @NamedQueries(
         {
-                @NamedQuery(name = "allRestaurants", query = "select r from RestaurantEntity r order by r.customerRating desc"),
-                @NamedQuery(name = "restaurantsByName", query = "select r from RestaurantEntity  r where lower(r.restaurantName) like :restaurantName order by r.restaurantName"),
+                @NamedQuery(name = "allRestaurants",
+                        query = "select r from RestaurantEntity r order by r.customerRating desc"),
+                @NamedQuery(name = "restaurantsByName",
+                        query = "select r from RestaurantEntity  r where lower(r.restaurantName) like :restaurantName order by r.restaurantName"),
+                @NamedQuery(name = "restaurantByUuid",
+                        query = "select r from RestaurantEntity r where r.uuid = :restaurantUuid")
         }
 )
 public class RestaurantEntity implements Serializable {
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "UUID")
+    @Size(max = 200)
     @NotNull
     private String uuid;
 
@@ -59,6 +72,12 @@ public class RestaurantEntity implements Serializable {
             joinColumns = @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "id", nullable = false))
     private List<CategoryEntity> categories;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "restaurant_item",
+            joinColumns = @JoinColumn(name = "RESTAURANT_ID", referencedColumnName = "id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "ITEM_ID", referencedColumnName = "id", nullable = false))
+    private List<ItemEntity> items;
 
     public Integer getId() {
         return id;
@@ -130,6 +149,69 @@ public class RestaurantEntity implements Serializable {
 
     public void setCategories(List<CategoryEntity> categories) {
         this.categories = categories;
+    }
+
+    public List<ItemEntity> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ItemEntity> items) {
+        this.items = items;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RestaurantEntity that = (RestaurantEntity) o;
+
+        return new EqualsBuilder()
+                .append(id, that.id)
+                .append(uuid, that.uuid)
+                .append(restaurantName, that.restaurantName)
+                .append(photoUrl, that.photoUrl)
+                .append(customerRating, that.customerRating)
+                .append(numberCustomersRated, that.numberCustomersRated)
+                .append(avgPrice, that.avgPrice)
+                .append(address, that.address)
+                .append(categories, that.categories)
+                .append(items, that.items)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(uuid)
+                .append(restaurantName)
+                .append(photoUrl)
+                .append(customerRating)
+                .append(numberCustomersRated)
+                .append(avgPrice)
+                .append(address)
+                .append(categories)
+                .append(items)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("uuid", uuid)
+                .append("restaurantName", restaurantName)
+                .append("photoUrl", photoUrl)
+                .append("customerRating", customerRating)
+                .append("numberCustomersRated", numberCustomersRated)
+                .append("avgPrice", avgPrice)
+                .append("address", address)
+                .append("categories", categories)
+                .append("items", items)
+                .toString();
     }
 
 }

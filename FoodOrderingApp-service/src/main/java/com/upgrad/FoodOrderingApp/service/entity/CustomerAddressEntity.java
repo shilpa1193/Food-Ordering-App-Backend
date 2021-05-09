@@ -17,9 +17,9 @@ import javax.validation.constraints.NotNull;
 @NamedQueries(
         {
                 @NamedQuery(name = "customerAddressByCustomer",
-                        query = "select ca from CustomerAddressEntity ca where ca.customer = :customer order by ca.address.id desc "),
+                        query = "select ca from CustomerAddressEntity ca where ca.customer.id = :customerId order by ca.address.id desc "),
                 @NamedQuery(name = "customerAddressByCustIDAddrID",
-                        query = "select ca from CustomerAddressEntity ca where ca.customer = :customer and ca.address = :address")
+                        query = "select ca from CustomerAddressEntity ca where ca.customer.id = :customerId and ca.address.id = :addressId")
         }
 )
 public class CustomerAddressEntity {

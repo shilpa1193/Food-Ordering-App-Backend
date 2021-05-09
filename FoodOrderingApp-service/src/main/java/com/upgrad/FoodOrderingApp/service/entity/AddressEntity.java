@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
@@ -42,19 +43,24 @@ public class AddressEntity implements Serializable {
     private Integer id;
 
     @Column(name = "UUID")
+    @Size(max = 200)
     @NotNull
     private String uuid;
 
     @Column(name = "FLAT_BUIL_NUMBER")
+    @Size(max = 255)
     private String flatBuilNo;
 
     @Column(name = "LOCALITY")
+    @Size(max = 255)
     private String locality;
 
     @Column(name = "CITY")
+    @Size(max = 30)
     private String city;
 
     @Column(name = "PINCODE")
+    @Size(max = 30)
     private String pincode;
 
     @ManyToOne

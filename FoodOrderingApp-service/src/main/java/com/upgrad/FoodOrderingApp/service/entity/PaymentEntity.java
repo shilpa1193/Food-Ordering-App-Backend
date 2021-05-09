@@ -4,54 +4,52 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 
 /**
- * The CouponEntity class is mapped to table 'coupon' in database
+ * The PaymentEntity class is mapped to table 'payment' in database
  * All the columns are mapped to its respective attributes of the class
  */
 
 @Entity
-@Table(name = "coupon")
-@NamedQueries(
-        {
-                @NamedQuery(name = "couponByCouponName",
-                        query = "select c from CouponEntity c where c.couponName = :couponName"),
-                @NamedQuery(name = "couponByUuid",
-                        query = "select c from CouponEntity c where c.uuid = :uuid")
-        }
-)
-public class CouponEntity implements Serializable {
-
-    public CouponEntity() {
-    }
-
-    public CouponEntity(@NotNull String uuid, String coupon_name, @NotNull Integer percent) {
-        this.uuid = uuid;
-        this.couponName = coupon_name;
-        this.percent = percent;
-    }
+@Table(name = "payment")
+@NamedQueries({
+        @NamedQuery(name = "allPaymentMethods", query = "select p from PaymentEntity p"),
+        @NamedQuery(name = "paymentByUUID", query = "select p from PaymentEntity p where p.uuid = :paymentUUID")
+})
+public class PaymentEntity {
 
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "UUID")
+    @Column(name = "UUID", unique = true)
     @NotNull
     @Size(max = 200)
     private String uuid;
 
-    @Column(name = "COUPON_NAME")
+    @Column(name = "PAYMENT_NAME")
     @Size(max = 255)
-    private String couponName;
+    private String paymentName;
 
-    @Column(name = "PERCENT")
-    @NotNull
-    private Integer percent;
+    public PaymentEntity() {
+    }
+
+    public PaymentEntity(@NotNull @Size(max = 200) String uuid,
+                         @Size(max = 255) String paymentName) {
+        this.uuid = uuid;
+        this.paymentName = paymentName;
+    }
 
     public Integer getId() {
         return id;
@@ -69,20 +67,12 @@ public class CouponEntity implements Serializable {
         this.uuid = uuid;
     }
 
-    public String getCouponName() {
-        return couponName;
+    public String getPaymentName() {
+        return paymentName;
     }
 
-    public void setCouponName(String coupon_name) {
-        this.couponName = coupon_name;
-    }
-
-    public Integer getPercent() {
-        return percent;
-    }
-
-    public void setPercent(Integer percent) {
-        this.percent = percent;
+    public void setPaymentName(String paymentName) {
+        this.paymentName = paymentName;
     }
 
     @Override
@@ -91,13 +81,12 @@ public class CouponEntity implements Serializable {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        CouponEntity that = (CouponEntity) o;
+        PaymentEntity that = (PaymentEntity) o;
 
         return new EqualsBuilder()
                 .append(id, that.id)
                 .append(uuid, that.uuid)
-                .append(couponName, that.couponName)
-                .append(percent, that.percent)
+                .append(paymentName, that.paymentName)
                 .isEquals();
     }
 
@@ -106,8 +95,7 @@ public class CouponEntity implements Serializable {
         return new HashCodeBuilder(17, 37)
                 .append(id)
                 .append(uuid)
-                .append(couponName)
-                .append(percent)
+                .append(paymentName)
                 .toHashCode();
     }
 
@@ -116,8 +104,7 @@ public class CouponEntity implements Serializable {
         return new ToStringBuilder(this)
                 .append("id", id)
                 .append("uuid", uuid)
-                .append("couponName", couponName)
-                .append("percent", percent)
+                .append("paymentName", paymentName)
                 .toString();
     }
 }

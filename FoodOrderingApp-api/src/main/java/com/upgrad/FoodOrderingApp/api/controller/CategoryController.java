@@ -9,22 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Controller
+@RestController
 @CrossOrigin
 public class CategoryController {
+
     @Autowired
     private CategoryService categoryService;
-
 
     /**
      * RestController method called when the request pattern is of type "/category"
@@ -35,79 +31,78 @@ public class CategoryController {
      */
     @RequestMapping(method = RequestMethod.GET, path = "/category",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CategoriesListResponse> getAllCategoriesOrderedByName() {
-        List<CategoryEntity> allCategories = categoryService.getAllCategoriesOrderedByName();
+    public ResponseEntity<CategoriesListResponse> getAllCategories() {
+        final List<CategoryEntity> allCategories = categoryService.getAllCategoriesOrderedByName();
 
-        List<CategoryListResponse> categoryLists = new ArrayList<>();
-
+        final CategoriesListResponse categoriesListResponse = new CategoriesListResponse();
         if (!allCategories.isEmpty()) {
+            final List<CategoryListResponse> categoryLists = new ArrayList<>();
             allCategories.forEach(
-                    category -> categoryLists.add(setCategoryList(category))
+                    category -> categoryLists.add(createCategoryList(category))
             );
+            categoriesListResponse.categories(categoryLists);
         }
-        CategoriesListResponse categoriesListResponse = new CategoriesListResponse().categories(categoryLists);
 
-        return new ResponseEntity<CategoriesListResponse>(categoriesListResponse, HttpStatus.OK);
+        return new ResponseEntity<>(categoriesListResponse, HttpStatus.OK);
 
     }
 
     /**
-     * RestController method called when the request pattern is of type "/order/coupon/{coupon_name}"
+     * RestController method called when the request pattern is of type "/category/{category_id}"
      * and the incoming request is of 'GET' type
      * Retrieve coupon details using coupon name
      *
-     * @param category_id - This represents coupon name
+     * @param categoryId - This represents coupon name
      * @return - ResponseEntity(CouponDetailsResponse, HttpStatus.OK)
      * @throws CategoryNotFoundException - if incorrect/ invalid category id is sent,
-     *                                   *                                      or the category id doesn't exist
+     *                                   or the category id doesn't exist
      */
     @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CategoryDetailsResponse> getCategoryById(
-            @PathVariable String category_id) throws CategoryNotFoundException {
-        CategoryEntity categoryEntity = categoryService.getCategoryById(category_id);
-        System.out.print(categoryEntity.getItems().size());
-        List<ItemEntity> itemEntities = categoryEntity.getItems();
-        CategoryDetailsResponse categoryDetailsResponse = new CategoryDetailsResponse();
-        categoryDetailsResponse.setId(UUID.fromString(categoryEntity.getUuid()));
-        categoryDetailsResponse.setCategoryName(categoryEntity.getCategoryName());
-        List<ItemList> itemLists = new ArrayList<>();
+            @PathVariable("category_id") final String categoryId) throws CategoryNotFoundException {
+        final CategoryEntity categoryEntity = categoryService.getCategoryById(categoryId);
+        final List<ItemEntity> itemEntities = categoryEntity.getItems();
+
+        final CategoryDetailsResponse categoryDetailsResponse = new CategoryDetailsResponse()
+                .id(UUID.fromString(categoryEntity.getUuid()))
+                .categoryName(categoryEntity.getCategoryName());
+
         if (!itemEntities.isEmpty()) {
-            itemEntities.forEach(itemEntity -> {
-                itemLists.add(setItemList(itemEntity));
-            });
-            categoryDetailsResponse.setItemList(itemLists);
+            final List<ItemList> itemLists = new ArrayList<>();
+            itemEntities.forEach(itemEntity -> itemLists.add(createItemList(itemEntity)));
+            categoryDetailsResponse.itemList(itemLists);
         }
-        return new ResponseEntity<CategoryDetailsResponse>(categoryDetailsResponse, HttpStatus.OK);
+
+        return new ResponseEntity<>(categoryDetailsResponse, HttpStatus.OK);
     }
 
     /**
      * Method to set and return ItemList
      *
-     * @param itemEntity - itemEntity object
+     * @param itemEntity - ItemEntity object
      * @return - ItemList
      */
-    private ItemList setItemList(ItemEntity itemEntity) {
-        ItemList itemList = new ItemList();
-        itemList.setId(UUID.fromString(itemEntity.getUuid()));
-        itemList.setItemName(itemEntity.getItemName());
-        itemList.setPrice(itemEntity.getPrice());
-        String itemType = itemEntity.getType().equals(0)? "VEG":"NON_VEG";
-        itemList.setItemType(ItemList.ItemTypeEnum.fromValue(itemType));
+    private ItemList createItemList(final ItemEntity itemEntity) {
+        final ItemList itemList = new ItemList();
+        itemList.id(UUID.fromString(itemEntity.getUuid()));
+        itemList.itemName(itemEntity.getItemName());
+        itemList.price(itemEntity.getPrice());
+        final String itemType = itemEntity.getType().equals("0") ? "VEG" : "NON_VEG";
+        itemList.itemType(ItemList.ItemTypeEnum.fromValue(itemType));
         return itemList;
     }
 
     /**
      * Method to set all  field into CategoryListResponse
      *
-     * @param category - CategoryEntity object
+     * @param categoryEntity - CategoryEntity object
      * @return - CategoryListResponse
      */
-    private CategoryListResponse setCategoryList(Object category) {
-        CategoryEntity categoryEntity = (CategoryEntity) category;
-        CategoryListResponse categoryListResponse = new CategoryListResponse();
-        categoryListResponse.setCategoryName(categoryEntity.getCategoryName());
-        categoryListResponse.setId(UUID.fromString(categoryEntity.getUuid()));
+    private CategoryListResponse createCategoryList(final CategoryEntity categoryEntity) {
+        final CategoryListResponse categoryListResponse = new CategoryListResponse();
+        categoryListResponse.categoryName(categoryEntity.getCategoryName());
+        categoryListResponse.id(UUID.fromString(categoryEntity.getUuid()));
         return categoryListResponse;
     }
 }

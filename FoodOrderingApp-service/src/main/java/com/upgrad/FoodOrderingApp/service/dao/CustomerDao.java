@@ -45,11 +45,9 @@ public class CustomerDao {
      * Method to persist CustomerAuthEntity in the database
      *
      * @param authEntity - CustomerAuthEntity to be persisted in the database
-     * @return - CustomerAuthEntity
      */
-    public CustomerAuthEntity createCustomerAuth(final CustomerAuthEntity authEntity) {
+    public void createCustomerAuth(final CustomerAuthEntity authEntity) {
         entityManager.persist(authEntity);
-        return authEntity;
     }
 
     /**
@@ -84,7 +82,6 @@ public class CustomerDao {
      * @return - updated CustomerEntity
      */
     public CustomerEntity updateCustomer(final CustomerEntity customerEntity) {
-        CustomerEntity mergedCustomerEntity = entityManager.merge(customerEntity);
-        return mergedCustomerEntity;
+        return entityManager.merge(customerEntity);
     }
 }

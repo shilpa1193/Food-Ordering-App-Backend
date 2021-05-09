@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
@@ -28,29 +29,36 @@ public class CustomerEntity implements Serializable {
     private Integer id;
 
     @Column(name = "UUID")
+    @Size(max = 200)
     @NotNull
     private String uuid;
 
     @Column(name = "FIRSTNAME")
+    @Size(max = 30)
     @NotNull
     private String firstName;
 
     @Column(name = "LASTNAME")
+    @Size(max = 30)
     private String lastName;
 
     @Column(name = "EMAIL")
+    @Size(max = 50)
     private String email;
 
     @Column(name = "CONTACT_NUMBER")
+    @Size(max = 30)
     @NotNull
     private String contactNumber;
 
     @Column(name = "PASSWORD")
+    @Size(max = 255)
     @NotNull
     @ToStringExclude
     private String password;
 
     @Column(name = "SALT")
+    @Size(max = 255)
     @NotNull
     @ToStringExclude
     private String salt;
@@ -147,6 +155,7 @@ public class CustomerEntity implements Serializable {
                 .append(contactNumber, that.contactNumber)
                 .append(password, that.password)
                 .append(salt, that.salt)
+                .append(address, that.address)
                 .isEquals();
     }
 
@@ -161,6 +170,7 @@ public class CustomerEntity implements Serializable {
                 .append(contactNumber)
                 .append(password)
                 .append(salt)
+                .append(address)
                 .toHashCode();
     }
 
@@ -175,6 +185,7 @@ public class CustomerEntity implements Serializable {
                 .append("contactNumber", contactNumber)
                 .append("password", password)
                 .append("salt", salt)
+                .append("address", address)
                 .toString();
     }
 

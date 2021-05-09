@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
@@ -30,6 +31,7 @@ public class CustomerAuthEntity implements Serializable {
     private Integer id;
 
     @Column(name = "UUID")
+    @Size(max = 200)
     @NotNull
     private String uuid;
 
@@ -39,6 +41,7 @@ public class CustomerAuthEntity implements Serializable {
     private CustomerEntity customer;
 
     @Column(name = "ACCESS_TOKEN")
+    @Size(max = 500)
     private String accessToken;
 
     @Column(name = "LOGIN_AT")

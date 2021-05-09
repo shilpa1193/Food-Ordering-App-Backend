@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -20,7 +21,7 @@ import java.io.Serializable;
                 @NamedQuery(name = "stateByUUID",
                         query = "select s from StateEntity s where s.uuid = :stateUuid"),
 
-                @NamedQuery(name = "getAllStates" ,
+                @NamedQuery(name = "allStates",
                         query = "select s from StateEntity s")
         }
 )
@@ -40,10 +41,12 @@ public class StateEntity implements Serializable {
     private Integer id;
 
     @Column(name = "UUID")
+    @Size(max = 200)
     @NotNull
     private String uuid;
 
     @Column(name = "STATE_NAME")
+    @Size(max = 30)
     private String stateName;
 
     public Integer getId() {

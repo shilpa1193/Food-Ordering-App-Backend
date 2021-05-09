@@ -6,18 +6,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+
+/**
+ * The RestaurantItemEntity class is mapped to table 'restaurant_item' in database
+ * All the columns are mapped to its respective attributes of the class
+ */
 
 @Entity
-@Table(name = "restaurant_category")
-@NamedQueries(
-        {
-                @NamedQuery(name = "categoriesByRestaurant",
-                        query = "select rc from RestaurantCategoryEntity rc where rc.restaurant.uuid = :restaurantUuid order by rc.category.categoryName"),
-                @NamedQuery(name = "restaurantsByCategory",
-                        query = "select rc from RestaurantCategoryEntity rc where rc.category.uuid =:categoryUuid order by  rc.restaurant.restaurantName")
-        }
-)
-public class RestaurantCategoryEntity {
+@Table(name = "restaurant_item")
+public class RestaurantItemEntity implements Serializable {
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +24,13 @@ public class RestaurantCategoryEntity {
 
     @ManyToOne
     @NotNull
-    @JoinColumn(name = "RESTAURANT_ID")
-    private RestaurantEntity restaurant;
+    @JoinColumn(name = "ITEM_ID")
+    private ItemEntity item;
 
     @ManyToOne
     @NotNull
-    @JoinColumn(name = "CATEGORY_ID")
-    private CategoryEntity category;
+    @JoinColumn(name = "RESTAURANT_ID")
+    private RestaurantEntity restaurant;
 
     public Integer getId() {
         return id;
@@ -39,6 +38,14 @@ public class RestaurantCategoryEntity {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public ItemEntity getItem() {
+        return item;
+    }
+
+    public void setItem(ItemEntity item) {
+        this.item = item;
     }
 
     public RestaurantEntity getRestaurant() {
@@ -49,26 +56,18 @@ public class RestaurantCategoryEntity {
         this.restaurant = restaurant;
     }
 
-    public CategoryEntity getCategory() {
-        return category;
-    }
-
-    public void setCategory(CategoryEntity category) {
-        this.category = category;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        RestaurantCategoryEntity that = (RestaurantCategoryEntity) o;
+        RestaurantItemEntity that = (RestaurantItemEntity) o;
 
         return new EqualsBuilder()
                 .append(id, that.id)
+                .append(item, that.item)
                 .append(restaurant, that.restaurant)
-                .append(category, that.category)
                 .isEquals();
     }
 
@@ -76,8 +75,8 @@ public class RestaurantCategoryEntity {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(id)
+                .append(item)
                 .append(restaurant)
-                .append(category)
                 .toHashCode();
     }
 
@@ -85,8 +84,8 @@ public class RestaurantCategoryEntity {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
+                .append("item", item)
                 .append("restaurant", restaurant)
-                .append("category", category)
                 .toString();
     }
 }

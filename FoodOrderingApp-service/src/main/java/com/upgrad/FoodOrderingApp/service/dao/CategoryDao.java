@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 public class CategoryDao {
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -20,13 +21,8 @@ public class CategoryDao {
      * @return - list of categories entities else null
      */
     public List<CategoryEntity> getAllCategoriesOrderedByName() {
-        try {
-            List<CategoryEntity> allCategories =entityManager.createNamedQuery("getAllCategoriesOrderedByName", CategoryEntity.class)
-                    .getResultList();
-            return allCategories;
-        } catch (NoResultException nre) {
-            return null;
-        }
+        return entityManager.createNamedQuery("allCategoriesOrderedByName", CategoryEntity.class)
+                .getResultList();
     }
 
     /**
@@ -35,9 +31,9 @@ public class CategoryDao {
      * @param categoryUuid - String represents category uuid
      * @return - category details using category uuid
      */
-    public CategoryEntity getCategoryById(String categoryUuid) {
+    public CategoryEntity getCategoryById(final String categoryUuid) {
         try {
-            return entityManager.createNamedQuery("getCategoryUsingUuid", CategoryEntity.class)
+            return entityManager.createNamedQuery("categoryByUuid", CategoryEntity.class)
                     .setParameter("categoryUuid", categoryUuid)
                     .getSingleResult();
         } catch (NoResultException nre) {
@@ -51,14 +47,10 @@ public class CategoryDao {
      *
      * @return -  get all RestaurantCategoryEntity  using restaurant uuid
      */
-    public List<RestaurantCategoryEntity> getCategoriesByRestaurant(String restaurantUuid) {
-        try {
-            return entityManager.createNamedQuery("getCategoriesByRestaurant", RestaurantCategoryEntity.class)
-                    .setParameter("restaurantUuid",restaurantUuid)
-                    .getResultList();
-        } catch(NoResultException nre) {
-            return null;
-        }
+    public List<RestaurantCategoryEntity> getCategoriesByRestaurant(final String restaurantUuid) {
+        return entityManager.createNamedQuery("categoriesByRestaurant", RestaurantCategoryEntity.class)
+                .setParameter("restaurantUuid", restaurantUuid)
+                .getResultList();
     }
 
 }
